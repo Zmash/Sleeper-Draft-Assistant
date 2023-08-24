@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      input[type="text"], p {
+        width: 100%;
+        padding: 6px;
+        margin: 8px 0;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+      }
+      .green-button {
+        background-color: #4CAF50;
+      }
+      .red-button {
+        background-color: #FF0000;
+      }
+    </style>
+  </head>
+  <body onload="loadConfigData()">
+    <div>
+      <label for="username">Benutzername:</label>
+      <input type="text" id="username" name="username">
+      <label for="userId">Benutzer-ID:</label>
+      <input type="text" id="userId" name="userId">
+      <label for="leagueId">Liga-ID:</label>
+      <input type="text" id="leagueId" name="leagueId">
+      <label for="draftId">Draft-ID:</label>
+      <input type="text" id="draftId" name="draftId">
+      <label for="year">Jahr:</label>
+      <input type="text" id="year" name="year">
+      <p id="currentPick">Aktuelle Picks: Laden...</p>
+      <button class="green-button" onclick="submitData()">Speichern</button>
+      <button class="green-button" onclick="fetchPicks()">Picks aktualisieren</button>
+      <button class="red-button" onclick="resetPicks()">Picks zurücksetzen</button>
+    </div>
+    <script>
+      function loadConfigData() {
+        google.script.run.withSuccessHandler(fillForm).getConfigData();
+        setInterval(function() {
+          google.script.run.withSuccessHandler(showCurrentPick).getCurrentPick();
+        }, 3000); // Every 3 seconds
+      }
+
+      function fillForm(data) {
+        document.getElementById('username').value = data.username;
+        document.getElementById('userId').value = data.userId;
+        document.getElementById('leagueId').value = data.leagueId;
+        document.getElementById('draftId').value = data.draftId;
+        document.getElementById('year').value = data.year;
+      }
+
+      function showCurrentPick(pickNumber) {
+        document.getElementById('currentPick').textContent = "Aktuelle Picks: " + pickNumber;
+      }
+
+      function submitData() {
+        var username = document.getElementById('username').value;
+        var userId = document.getElementById('userId').value;
+        var leagueId = document.getElementById('leagueId').value;
+        var draftId = document.getElementById('draftId').value;
+        var year = document.getElementById('year').value;
+        google.script.run.storeConfigData(username, userId, leagueId, draftId, year);
+      }
+
+      function fetchPicks() {
+        google.script.run.fetchDataFromSleeper();
+        alert("Picks werden aktualisiert!");
+        google.script.run.withSuccessHandler(showCurrentPick).getCurrentPick();
+      }
+
+      function resetPicks() {
+        var confirmation = confirm("Möchten Sie wirklich alle Picks zurücksetzen?");
+        if (confirmation) {
+          google.script.run.resetAllPicks();
+          alert("Picks werden zurückgesetzt!");
+          google.script.run.withSuccessHandler(showCurrentPick).getCurrentPick();
+        }
+      }
+    </script>
+  </body>
+</html>
