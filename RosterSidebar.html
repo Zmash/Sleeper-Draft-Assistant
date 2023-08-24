@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body onload="loadRosterData()">
+    <h2>Mein Roster</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Position</th>
+          <th>Spieler</th>
+          <th>Team</th>
+          <th>Pick Nummer</th>
+        </tr>
+      </thead>
+      <tbody id="rosterTableBody">
+        <!-- Content will be filled by JavaScript -->
+      </tbody>
+    </table>
+    <script>
+      function loadRosterData() {
+        google.script.run.withSuccessHandler(displayRoster).getRosterData();
+      }
+
+      function displayRoster(data) {
+        var tableBody = document.getElementById('rosterTableBody');
+        data.forEach(function(player) {
+          var row = tableBody.insertRow();
+          row.insertCell(0).textContent = player.position;
+          row.insertCell(1).textContent = player.name;
+          row.insertCell(2).textContent = player.team;
+          row.insertCell(3).textContent = player.pickNumber;
+        });
+      }
+    </script>
+  </body>
+</html>
